@@ -1,10 +1,17 @@
 # my doom fork
 
-Changes:
+## Changes
+
 - Clean up compilation on macOS.
 - Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
 - Add `mouse_menu_pointing` option, allowing you to mouse over menu items to select them.
   Will only work when `mouse_ungrab_on_pause` is also enabled.
+
+## Recommendations
+
+- To get music working, unzip [this archive of GUS patches](https://www.doomworld.com/idgames/music/dgguspat) to a
+  folder on your computer, and then set `wildmidi_config_path` in your `doom.cfg` to the full path to one of the .cfg
+  files in that folder. `timidity.cfg` seems to work well.
 
 # Original clowndoom README
 
