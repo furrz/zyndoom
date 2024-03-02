@@ -1,2 +1,5 @@
 /linuxdoom-1.10/linux
 /build
+.idea
+cmake-build-debug
+*.o
