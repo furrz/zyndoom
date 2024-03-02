@@ -263,6 +263,12 @@ void D_Display (void)
 	if (gamestate == GS_LEVEL && gametic)
 		HU_Erase();
 
+	/* control mouse cursor grab */
+	I_GrabMouse(!paused
+		 && !menuactive
+		 && !demoplayback
+		 && players[consoleplayer].viewz != 1);
+
 	/* do buffered drawing */
 	switch (gamestate)
 	{
