@@ -3,6 +3,8 @@
 Changes:
 - Clean up compilation on macOS.
 - Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
+- Add `mouse_menu_pointing` option, allowing you to mouse over menu items to select them.
+  Will only work when `mouse_ungrab_on_pause` is also enabled.
 
 # Original clowndoom README
 
