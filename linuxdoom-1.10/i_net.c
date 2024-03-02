@@ -19,11 +19,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <netinet/in.h>
 #include <errno.h>
 
-/* TODO: Abstract this away. */
-#if defined(__unix__)
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -31,9 +32,6 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/ioctl.h>
-#elif defined(_WIN32)
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #endif
 
 #include "i_system.h"
@@ -45,6 +43,13 @@
 
 #include "i_net.h"
 
+
+#if defined(_WIN32)
+#define ioctl ioctlsocket
+#define ioctl_bool_t u_long
+#else
+#define ioctl_bool_t int
+#endif
 
 /* NETWORKING */
 
@@ -64,10 +69,10 @@ static int UDPsocket (void)
 	/* allocate a socket */
 	s = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (s == -1)
-#if defined(__unix__)
-		I_Error ("can't create socket: %s",strerror(errno));
-#elif defined(_WIN32)
+#if defined(_WIN32)
 		I_Error ("can't create socket: error code %d",WSAGetLastError());
+#else
+		I_Error ("can't create socket: %s",strerror(errno));
 #endif
 
 	return s;
@@ -202,12 +207,7 @@ static void PacketGet (void)
 /* I_InitNetwork */
 void I_InitNetwork (void)
 {
-#if defined(__unix__)
-	int
-#elif defined(_WIN32)
-	u_long
-#endif
-	                    trueval = d_true;
+	ioctl_bool_t		trueval = d_true;
 	int                 i;
 	int                 p;
 	struct hostent*     hostentry;      /* host information entry */
@@ -305,12 +305,8 @@ void I_InitNetwork (void)
 	/* build message to receive */
 	insocket = UDPsocket ();
 	BindToLocalPort (insocket,htons(DOOMPORT));
-#if defined(__unix__)
-	ioctl
-#elif defined(_WIN32)
-	ioctlsocket
-#endif
-		(insocket, FIONBIO, &trueval);
+
+	ioctl(insocket, FIONBIO, &trueval);
 
 	sendsocket = UDPsocket ();
 }
