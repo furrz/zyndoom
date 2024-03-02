@@ -637,7 +637,7 @@ d_bool I_QrySongPlaying(int handle)
 void I_SetMusicVolume(int volume)
 {
 	/* Internal state variable. */
-   /* snd_MusicVolume = volume; */
+    /* snd_MusicVolume = volume; */
 	/* Now set volume on output device. */
 #ifndef WILDMIDI
 	(void)volume;
