@@ -70,6 +70,9 @@ int                     showMessages;
 int                     detailLevel;
 int                     screenblocks;           /* has default */
 
+int						mouse_menu_pointing;	/* has default */
+
+
 /* temp for screenblocks (0-9) */
 int                     screenSize;
 
@@ -1350,31 +1353,52 @@ d_bool M_Responder (event_t* ev)
 		if (ev->type == ev_mouse && mousewait < I_GetTime())
 		{
 			mousey += ev->data3;
-			if (mousey < lasty-30*4)
-			{
-				ch = KEY_DOWNARROW;
-				mousewait = I_GetTime() + 5;
-				mousey = lasty -= 30*4;
-			}
-			else if (mousey > lasty+30*4)
-			{
-				ch = KEY_UPARROW;
-				mousewait = I_GetTime() + 5;
-				mousey = lasty += 30*4;
-			}
-
 			mousex += ev->data2;
-			if (mousex < lastx-30*4)
-			{
-				ch = KEY_LEFTARROW;
-				mousewait = I_GetTime() + 5;
-				mousex = lastx -= 30*4;
-			}
-			else if (mousex > lastx+30*44)
-			{
-				ch = KEY_RIGHTARROW;
-				mousewait = I_GetTime() + 5;
-				mousex = lastx += 30*4;
+
+			if (mouse_menu_pointing) {
+				/* new behaviour: hover over a menu item to select it */
+
+				const int max = currentMenu->numitems;
+				for (i = 0; i < max; i++)
+				{
+					const int y = Y_CENTRE(currentMenu->yRaw) + i * LINEHEIGHT;
+
+					if (currentMenu->menuitems[i].name[0]
+						&& currentMenu->menuitems[i].status != -1
+						&& ev->data5 >= y && ev->data5 <= y + LINEHEIGHT
+						&& itemOn != i) {
+						itemOn = i;
+						S_StartSound(NULL,sfx_pstop);
+					}
+				}
+
+			} else {
+				/* old behaviour: move mouse up/down to change selection */
+
+				if (mousey < lasty-30*4)
+				{
+					ch = KEY_DOWNARROW;
+					mousewait = I_GetTime() + 5;
+					mousey = lasty -= 30*4;
+				}
+				else if (mousey > lasty+30*4)
+				{
+					ch = KEY_UPARROW;
+					mousewait = I_GetTime() + 5;
+					mousey = lasty += 30*4;
+				}
+				if (mousex < lastx-30*4)
+				{
+					ch = KEY_LEFTARROW;
+					mousewait = I_GetTime() + 5;
+					mousex = lastx -= 30*4;
+				}
+				else if (mousex > lastx+30*44)
+				{
+					ch = KEY_RIGHTARROW;
+					mousewait = I_GetTime() + 5;
+					mousex = lastx += 30*4;
+				}
 			}
 
 			if (ev->data1&1)

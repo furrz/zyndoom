@@ -174,6 +174,11 @@ void IB_StartTic (void)
 	static int button_state;
 	SDL_Event sdl_event;
 
+	/* calculate framebuffer scale for in-game mouse positioning */
+	int window_width, window_height;
+	SDL_GetWindowSize(window, &window_width, &window_height);
+	const float fb_scale = (float)SCREENHEIGHT / (float)window_height;
+
 	while (SDL_PollEvent(&sdl_event))
 	{
 		switch (sdl_event.type)
@@ -212,6 +217,8 @@ void IB_StartTic (void)
 				event.type = ev_mouse;
 				event.data1 = button_state;
 				event.data2 = event.data3 = 0;
+				event.data4 = sdl_event.button.x * fb_scale;
+				event.data5 = sdl_event.button.y * fb_scale;
 				D_PostEvent(&event);
 				/* I_Info("b"); */
 				break;
@@ -231,6 +238,8 @@ void IB_StartTic (void)
 				event.type = ev_mouse;
 				event.data1 = button_state;
 				event.data2 = event.data3 = 0;
+				event.data4 = sdl_event.button.x * fb_scale;
+				event.data5 = sdl_event.button.y * fb_scale;
 				D_PostEvent(&event);
 				/* I_Info("bu"); */
 				break;
@@ -239,7 +248,8 @@ void IB_StartTic (void)
 				event.data1 = button_state;
 				event.data2 = sdl_event.motion.xrel * (1 << 5);
 				event.data3 = -sdl_event.motion.yrel * (1 << 5);
-
+				event.data4 = sdl_event.motion.x * fb_scale;
+				event.data5 = sdl_event.motion.y * fb_scale;
 				if (event.data2 || event.data3)
 				{
 					D_PostEvent(&event);
