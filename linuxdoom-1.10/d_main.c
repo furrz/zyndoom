@@ -87,6 +87,7 @@ void D_DoomLoop (void);
 
 const char*     wadfiles[MAXWADFILES];
 
+int				mouse_ungrab_on_pause;
 
 d_bool          devparm;        /* started game with -devparm */
 d_bool          nomonsters;     /* checkparm of -nomonsters */
@@ -263,11 +264,13 @@ void D_Display (void)
 	if (gamestate == GS_LEVEL && gametic)
 		HU_Erase();
 
-	/* control mouse cursor grab */
-	I_GrabMouse(!paused
-		 && !menuactive
-		 && !demoplayback
-		 && players[consoleplayer].viewz != 1);
+	if (mouse_ungrab_on_pause) {
+		/* control mouse cursor grab */
+		I_GrabMouse(!paused
+			 && !menuactive
+			 && !demoplayback
+			 && players[consoleplayer].viewz != 1);
+	}
 
 	/* do buffered drawing */
 	switch (gamestate)

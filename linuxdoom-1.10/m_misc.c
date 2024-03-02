@@ -169,6 +169,8 @@ extern int      mousebfire;
 extern int      mousebstrafe;
 extern int      mousebforward;
 
+extern int		mouse_ungrab_on_pause;
+
 extern int      joybfire;
 extern int      joybstrafe;
 extern int      joybuse;
@@ -235,6 +237,7 @@ default_t       defaults[] =
 	{"mouseb_strafe",&mousebstrafe,1, d_false},
 	{"mouseb_forward",&mousebforward,2, d_false},
 	{"mouse_sensitivity",&mouseSensitivity, 5, d_false},
+	{"mouse_ungrab_on_pause", &mouse_ungrab_on_pause, 1, d_false},
 
 	/* Joystick */
 	{"use_joystick",&usejoystick, 0, d_false},
