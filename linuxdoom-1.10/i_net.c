@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netinet/in.h>
+#include <errno.h>
 
 /* TODO: Abstract this away. */
 #if defined(__unix__)
@@ -87,10 +89,10 @@ BindToLocalPort
 
 	v = bind (s, (struct sockaddr *)&address, sizeof(address));
 	if (v == -1)
-#if defined(__unix__)
-		I_Error ("BindToPort: bind: %s", strerror(errno));
-#elif defined(_WIN32)
+#if defined(_WIN32)
 		I_Error ("BindToPort: bind: error code %d", WSAGetLastError());
+#else
+	I_Error ("BindToPort: bind: %s", strerror(errno));
 #endif
 }
 
