@@ -1,3 +1,11 @@
+# my doom fork
+
+Changes:
+- Clean up compilation on macOS.
+- Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
+
+# Original clowndoom README
+
 # clowndoom
 
 Yet another purist DOOM port.
