@@ -59,6 +59,8 @@ extern d_bool           message_dontfuckwithme;
 
 extern d_bool           chat_on;                /* in heads-up code */
 
+extern int				mouse_ungrab_on_pause;
+
 /* defaulted values */
 int                     mouseSensitivity;       /* has default */
 
@@ -1355,7 +1357,7 @@ d_bool M_Responder (event_t* ev)
 			mousey += ev->data3;
 			mousex += ev->data2;
 
-			if (mouse_menu_pointing) {
+			if (mouse_menu_pointing && mouse_ungrab_on_pause) {
 				/* new behaviour: hover over a menu item to select it */
 
 				const int max = currentMenu->numitems;
