@@ -789,6 +789,7 @@ void D_DoomMain (void)
 {
 	int             p;
 	char                    file[256];
+	d_bool			skipmodwarning;
 
 	FindResponseFile ();
 
@@ -797,6 +798,7 @@ void D_DoomMain (void)
 	setbuf (stdout, NULL);
 	modifiedgame = d_false;
 
+	skipmodwarning = M_CheckParm("-skipmodwarning");
 	nomonsters = M_CheckParm ("-nomonsters");
 	respawnparm = M_CheckParm ("-respawn");
 	fastparm = M_CheckParm ("-fast");
@@ -1051,11 +1053,16 @@ void D_DoomMain (void)
 			"===========================================================================\n"
 			"ATTENTION:  This version of DOOM has been modified.  If you would like to\n"
 			"get a copy of the original game, call 1-800-IDGAMES or see the readme file.\n"
-			"        You will not receive technical support for modified games.\n"
-			"                      press enter to continue\n"
-			"===========================================================================\n"
-			);
-		getchar ();
+			"        You will not receive technical support for modified games.\n");
+
+		if (!skipmodwarning)
+			I_Info(
+				"                      press enter to continue\n");
+
+		I_Info(
+			"===========================================================================\n");
+
+		if (!skipmodwarning) getchar ();
 	}
 
 
