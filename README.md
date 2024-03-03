@@ -1,4 +1,7 @@
-# my doom fork
+# zyndoom
+
+This is a fork of [clownacy/clowndoom](https://github.com/Clownacy/clowndoom/) where
+I mess around with the DOOM codebase.
 
 ## Changes
 

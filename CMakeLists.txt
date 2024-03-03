@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(clowndoom LANGUAGES C)
+project(zyndoom LANGUAGES C)
 
 set(BACKEND "SDL2" CACHE STRING "Which backend to use: Xlib, SDL1, or SDL2")
 option(WILDMIDI "Render MIDI using the WildMIDI library" ON)
 option(FRENCH "Change the language of various strings to French" OFF)
 
-add_executable(clowndoom WIN32
+add_executable(zyndoom WIN32
 	"linuxdoom-1.10/clownlibs/clowncommon/clowncommon.h"
 	"linuxdoom-1.10/clownlibs/dictionary.c"
 	"linuxdoom-1.10/clownlibs/dictionary.h"
@@ -137,29 +137,29 @@ add_executable(clowndoom WIN32
 	"linuxdoom-1.10/z_zone.h"
 )
 
-set_target_properties(clowndoom PROPERTIES C_STANDARD 90)
+set_target_properties(zyndoom PROPERTIES C_STANDARD 90)
 
 if(CMAKE_C_BYTE_ORDER STREQUAL "BIG_ENDIAN")
-	target_compile_definitions(clowndoom PRIVATE PLATFORM_IS_BIG_ENDIAN)
-	target_sources(clowndoom "linuxdoom-1.10/m_swap.c")
+	target_compile_definitions(zyndoom PRIVATE PLATFORM_IS_BIG_ENDIAN)
+	target_sources(zyndoom "linuxdoom-1.10/m_swap.c")
 endif()
 
 if(WIN32)
-	target_link_libraries(clowndoom PRIVATE ws2_32)
+	target_link_libraries(zyndoom PRIVATE ws2_32)
 endif()
 
 if(FRENCH)
-	target_compile_definitions(clowndoom PRIVATE FRENCH)
+	target_compile_definitions(zyndoom PRIVATE FRENCH)
 endif()
 
 # Handling linking/building WildMIDI
 if(WILDMIDI)
-	target_compile_definitions(clowndoom PRIVATE WILDMIDI)
+	target_compile_definitions(zyndoom PRIVATE WILDMIDI)
 
 	find_package(WildMidi)
 
 	if(WildMidi_FOUND)
-		target_link_libraries(clowndoom PRIVATE WildMidi::libwildmidi)
+		target_link_libraries(zyndoom PRIVATE WildMidi::libwildmidi)
 	else()
 		# Set and hide these internal options
 		set(WANT_ALSA OFF CACHE INTERNAL "" FORCE)
@@ -171,13 +171,13 @@ if(WILDMIDI)
 
 		add_subdirectory("external/wildmidi" EXCLUDE_FROM_ALL SYSTEM)
 		target_compile_options(libwildmidi-static PRIVATE "-w")
-		target_link_libraries(clowndoom PRIVATE libwildmidi-static)
+		target_link_libraries(zyndoom PRIVATE libwildmidi-static)
 	endif()
 endif()
 
 # Handle backends
 if(BACKEND STREQUAL "Xlib")
-	target_sources(clowndoom PRIVATE
+	target_sources(zyndoom PRIVATE
 		"linuxdoom-1.10/ib_sound/miniaudio.c"
 		"linuxdoom-1.10/ib_sound/miniaudio.h"
 		"linuxdoom-1.10/ib_system/posix.c"
@@ -185,12 +185,12 @@ if(BACKEND STREQUAL "Xlib")
 	)
 
 	# These are for the X11 stuff.
-	target_link_libraries(clowndoom PRIVATE Xext X11)
+	target_link_libraries(zyndoom PRIVATE Xext X11)
 
 	# These are for miniaudio.
-	target_link_libraries(clowndoom PRIVATE m ${CMAKE_DL_LIBS} pthread)
+	target_link_libraries(zyndoom PRIVATE m ${CMAKE_DL_LIBS} pthread)
 elseif(BACKEND STREQUAL "SDL1")
-	target_sources(clowndoom PRIVATE
+	target_sources(zyndoom PRIVATE
 		"linuxdoom-1.10/ib_sound/sdl.c"
 		"linuxdoom-1.10/ib_system/sdl.c"
 		"linuxdoom-1.10/ib_video/sdl.c"
@@ -204,9 +204,9 @@ elseif(BACKEND STREQUAL "SDL1")
 	#  add_subdirectory("external/sdl1" EXCLUDE_FROM_ALL)
 	#endif()
 
-	target_link_libraries(clowndoom PRIVATE SDL::SDL)
+	target_link_libraries(zyndoom PRIVATE SDL::SDL)
 elseif(BACKEND STREQUAL "SDL2")
-	target_sources(clowndoom PRIVATE
+	target_sources(zyndoom PRIVATE
 		"linuxdoom-1.10/ib_sound/sdl.c"
 		"linuxdoom-1.10/ib_system/sdl.c"
 		"linuxdoom-1.10/ib_video/sdl.c"
@@ -217,15 +217,15 @@ elseif(BACKEND STREQUAL "SDL2")
 	if(NOT SDL2_FOUND)
 		add_subdirectory("external/SDL" EXCLUDE_FROM_ALL SYSTEM)
 		if(SDL_STATIC)
-			target_link_libraries(clowndoom PRIVATE SDL2::SDL2main SDL2::SDL2-static)
+			target_link_libraries(zyndoom PRIVATE SDL2::SDL2main SDL2::SDL2-static)
 		else()
-			target_link_libraries(clowndoom PRIVATE SDL2::SDL2main SDL2::SDL2)
+			target_link_libraries(zyndoom PRIVATE SDL2::SDL2main SDL2::SDL2)
 		endif()
 	else()
-		target_link_libraries(clowndoom PRIVATE SDL2::SDL2main SDL2::SDL2)
+		target_link_libraries(zyndoom PRIVATE SDL2::SDL2main SDL2::SDL2)
 	endif()
 
-	target_compile_definitions(clowndoom PRIVATE INCLUDE_SDL2_MAIN)
+	target_compile_definitions(zyndoom PRIVATE INCLUDE_SDL2_MAIN)
 else()
 	message(FATAL_ERROR "Invalid BACKEND")
 endif()

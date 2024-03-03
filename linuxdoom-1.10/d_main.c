@@ -606,7 +606,7 @@ void IdentifyVersion (void)
 		if (configdir != NULL)
 			sprintf(basedefault, "%s/.config/", configdir);
 	}
-	strcat(basedefault, "clowndoomrc");
+	strcat(basedefault, "zyndoom.cfg");
 #else
 	strcpy(basedefault, "default.cfg");
 #endif
