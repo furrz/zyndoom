@@ -31,11 +31,9 @@
 #include <string.h>
 
 
-#ifdef __unix__
+#ifndef _WIN32
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #endif
 
 
@@ -578,38 +576,74 @@ void D_AddFile (const char *file)
 	I_Info("D_AddFile: Too many wads!\n");
 }
 
+/* IdentifyConfigPath */
+/* Choose an appropriate configuration file, or defaults to ./zyndoom.cfg. */
+void IdentifyConfigPath (void)
+{
+	const struct path_candidate
+	{
+		const char* directory_part_a;
+		const char* directory_part_b;
+	} path_candidates[] = {
+		{ ".", "/" },
+		{ getenv("XDG_CONFIG_HOME"), "/" },
+		{ getenv("HOME"), "/.config/" },
+		{ getenv("HOME"), "/Library/Application Support/" },
+		{ getenv("LOCALAPPDATA"), "/" },
+		{ getenv("APPDATA"), "/" },
+		{ "/etc/doom/", "" },
+		{ NULL, NULL }
+	};
+
+	const char* filename_candidates[] = {
+		"zyndoom.cfg",
+		"doom.cfg",
+		"default.cfg",
+		NULL
+	};
+
+	char tmp_path[1024] = { 0 };
+
+	for (const struct path_candidate* pc = &path_candidates[0]; pc->directory_part_b != NULL; pc++) {
+		if (pc->directory_part_a == NULL) continue;
+
+		snprintf(tmp_path, sizeof(tmp_path), "%s%s", pc->directory_part_a, pc->directory_part_b);
+		const char* path_end = tmp_path + strlen(tmp_path);
+
+		if (!M_DirExists(tmp_path)) continue;
+
+		for (const char* const* p_filename = &filename_candidates[0]; *p_filename != NULL; p_filename++) {
+			snprintf(path_end, sizeof(tmp_path) - (path_end - tmp_path), "%s", p_filename);
+			if (M_FileExists(tmp_path)) {
+				strncpy(basedefault, tmp_path, sizeof(basedefault));
+				I_Info("Choosing Configuration Path: %s\n", tmp_path);
+				return;
+			}
+		}
+	}
+
+	I_Info("Choosing Default Configuration Path: ./zyndoom.cfg\n");
+	strncpy(basedefault, "./zyndoom.cfg", sizeof(basedefault));
+}
+
 /* IdentifyVersion */
 /* Checks availability of IWAD files by name, */
 /* to determine whether registered/commercial features */
 /* should be executed (notably loading PWAD's). */
 void IdentifyVersion (void)
 {
-#ifdef __unix__
 	const char *configdir;
-#endif
 	const char *doomwaddir;
-#ifdef __unix__
-	doomwaddir = getenv("DOOMWADDIR");
-	if (!doomwaddir)
-#endif
-		doomwaddir = ".";
 
-#ifdef __unix__
-	configdir = getenv("XDG_CONFIG_HOME");
-	if (configdir != NULL)
-	{
-		sprintf(basedefault, "%s/", configdir);
-	}
-	else
-	{
-		configdir = getenv("HOME");
-		if (configdir != NULL)
-			sprintf(basedefault, "%s/.config/", configdir);
-	}
-	strcat(basedefault, "zyndoom.cfg");
-#else
-	strcpy(basedefault, "default.cfg");
-#endif
+	/* always able to get wad dir from the environment */
+	doomwaddir = getenv("DOOMWADDIR");
+	if (doomwaddir == NULL) doomwaddir = ".";
+
+	/* override wad dir on command line */
+	const int p = M_CheckParm("-waddir");
+	if (p) doomwaddir = myargv[p];
+
+	IdentifyConfigPath();
 
 	if (M_CheckParm ("-shdev"))
 	{

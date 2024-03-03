@@ -10,7 +10,22 @@ I mess around with the DOOM codebase.
 - Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
 - Add `mouse_menu_pointing` option, allowing you to mouse over menu items to select them.
   Will only work when `mouse_ungrab_on_pause` is also enabled.
-
+- New "smart" system for identifying the DOOM configuration path:
+  - Checks the following directories, in order:
+    - `./`
+    - `$XDG_CONFIG_HOME/`
+    - `$HOME/.config/`
+    - `$HOME/Library/Application Support/`
+    - `$LOCALAPPDATA/`
+    - `$APPDATA/`
+    - `/etc/doom/`
+  - For the following files, in order:
+    - `zyndoom.cfg`
+    - `doom.cfg`
+    - `default.cfg`
+  - If none exist, defaults to `./zyndoom.cfg`.
+  - This system is overridden by the `-config` cmdline option.
+  
 ## Recommendations
 
 - To get music working, unzip [this archive of GUS patches](https://www.doomworld.com/idgames/music/dgguspat) to a
