@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    DESCRIPTION:
-        DOOM graphics stuff for X11, UNIX.
+        DOOM graphics stuff for SDL2.
 
 ******************************************************************************/
 
@@ -34,18 +34,12 @@
 #include "../ib_video.h"
 
 
-#if SDL_MAJOR_VERSION >= 2
 static SDL_Window *window;
-#endif
 static SDL_Surface *surface;
 
 static void (*output_size_changed_callback)(size_t width, size_t height);
 
-#if SDL_MAJOR_VERSION >= 2
 static int SDLKeyToNative(const SDL_Keycode keycode, const SDL_Scancode scancode)
-#else
-static int SDLKeyToNative(const SDLKey keycode, const Uint8 scancode)
-#endif
 {
 	switch (keycode)
 	{
@@ -82,13 +76,8 @@ static int SDLKeyToNative(const SDLKey keycode, const Uint8 scancode)
 
 		case SDLK_LALT:
 		case SDLK_RALT:
-#if SDL_MAJOR_VERSION >= 2
 		case SDLK_LGUI:
 		case SDLK_RGUI:
-#else
-		case SDLK_LMETA:
-		case SDLK_RMETA:
-#endif
 			return KEY_RALT;
 
 		default:
@@ -97,67 +86,54 @@ static int SDLKeyToNative(const SDLKey keycode, const Uint8 scancode)
 
 	switch(scancode)
 	{
-	#if SDL_MAJOR_VERSION >= 2
-		#define SCANCODE_WRAPPER(sdl2, linux, macos) SDL_SCANCODE_##sdl2
-	#elif defined(_WIN32)
-		#define SCANCODE_WRAPPER(sdl2, linux, macos) linux - 8
-	#elif defined(__MACOSX__)
-		#define SCANCODE_WRAPPER(sdl2, linux, macos) macos
-	#else
-		#define SCANCODE_WRAPPER(sdl2, linux, macos) linux
-	#endif
-		/* These magic numbers are taken from 'sdl12-compat':
-		   https://github.com/libsdl-org/sdl12-compat/blob/b000fdc51a7543f4067fa45dbe402ace6c738ba6/src/SDL12_compat.c#L4291 */
-		case SCANCODE_WRAPPER(EQUALS      , 0x15, 0x18): return KEY_EQUALS;
-		case SCANCODE_WRAPPER(MINUS       , 0x14, 0x1B): return KEY_MINUS;
-		case SCANCODE_WRAPPER(SPACE       , 0x41, 0x31): return ' ';
-		case SCANCODE_WRAPPER(LEFTBRACKET , 0x22, 0x21): return '[';
-		case SCANCODE_WRAPPER(RIGHTBRACKET, 0x23, 0x1E): return ']';
-		case SCANCODE_WRAPPER(BACKSLASH   , 0x33, 0x2A): return '\\';
-		case SCANCODE_WRAPPER(SEMICOLON   , 0x2F, 0x29): return ';';
-		case SCANCODE_WRAPPER(APOSTROPHE  , 0x30, 0x27): return '\'';
-		case SCANCODE_WRAPPER(GRAVE       , 0x31, 0x32): return '`';
-		case SCANCODE_WRAPPER(COMMA       , 0x3B, 0x2B): return ',';
-		case SCANCODE_WRAPPER(PERIOD      , 0x3C, 0x2F): return '.';
-		case SCANCODE_WRAPPER(SLASH       , 0x3D, 0x2C): return '/';
-		case SCANCODE_WRAPPER(0, 0x13, 0x1D): return '0';
-		case SCANCODE_WRAPPER(1, 0x0A, 0x12): return '1';
-		case SCANCODE_WRAPPER(2, 0x0B, 0x13): return '2';
-		case SCANCODE_WRAPPER(3, 0x0C, 0x14): return '3';
-		case SCANCODE_WRAPPER(4, 0x0D, 0x15): return '4';
-		case SCANCODE_WRAPPER(5, 0x0E, 0x16): return '5';
-		case SCANCODE_WRAPPER(6, 0x0F, 0x17): return '6';
-		case SCANCODE_WRAPPER(7, 0x10, 0x18): return '7';
-		case SCANCODE_WRAPPER(8, 0x11, 0x19): return '8';
-		case SCANCODE_WRAPPER(9, 0x12, 0x1A): return '9';
-		case SCANCODE_WRAPPER(A, 0x26, 0x00): return 'a';
-		case SCANCODE_WRAPPER(B, 0x38, 0x0B): return 'b';
-		case SCANCODE_WRAPPER(C, 0x36, 0x08): return 'c';
-		case SCANCODE_WRAPPER(D, 0x28, 0x02): return 'd';
-		case SCANCODE_WRAPPER(E, 0x1A, 0x0E): return 'e';
-		case SCANCODE_WRAPPER(F, 0x29, 0x03): return 'f';
-		case SCANCODE_WRAPPER(G, 0x2A, 0x05): return 'g';
-		case SCANCODE_WRAPPER(H, 0x2B, 0x04): return 'h';
-		case SCANCODE_WRAPPER(I, 0x1F, 0x22): return 'i';
-		case SCANCODE_WRAPPER(J, 0x2C, 0x26): return 'j';
-		case SCANCODE_WRAPPER(K, 0x2D, 0x28): return 'k';
-		case SCANCODE_WRAPPER(L, 0x2E, 0x25): return 'l';
-		case SCANCODE_WRAPPER(M, 0x3A, 0x2E): return 'm';
-		case SCANCODE_WRAPPER(N, 0x39, 0x2D): return 'n';
-		case SCANCODE_WRAPPER(O, 0x20, 0x1F): return 'o';
-		case SCANCODE_WRAPPER(P, 0x21, 0x23): return 'p';
-		case SCANCODE_WRAPPER(Q, 0x18, 0x0C): return 'q';
-		case SCANCODE_WRAPPER(R, 0x1B, 0x0F): return 'r';
-		case SCANCODE_WRAPPER(S, 0x27, 0x01): return 's';
-		case SCANCODE_WRAPPER(T, 0x1C, 0x11): return 't';
-		case SCANCODE_WRAPPER(U, 0x1E, 0x20): return 'u';
-		case SCANCODE_WRAPPER(V, 0x37, 0x09): return 'v';
-		case SCANCODE_WRAPPER(W, 0x19, 0x0D): return 'w';
-		case SCANCODE_WRAPPER(X, 0x35, 0x07): return 'x';
-		case SCANCODE_WRAPPER(Y, 0x1D, 0x10): return 'y';
-		case SCANCODE_WRAPPER(Z, 0x34, 0x06): return 'z';
-
-	#undef SCANCODE_WRAPPER
+		case SDL_SCANCODE_EQUALS: return KEY_EQUALS;
+		case SDL_SCANCODE_MINUS: return KEY_MINUS;
+		case SDL_SCANCODE_SPACE: return ' ';
+		case SDL_SCANCODE_LEFTBRACKET: return '[';
+		case SDL_SCANCODE_RIGHTBRACKET: return ']';
+		case SDL_SCANCODE_BACKSLASH: return '\\';
+		case SDL_SCANCODE_SEMICOLON: return ';';
+		case SDL_SCANCODE_APOSTROPHE: return '\'';
+		case SDL_SCANCODE_GRAVE: return '`';
+		case SDL_SCANCODE_COMMA: return ',';
+		case SDL_SCANCODE_PERIOD: return '.';
+		case SDL_SCANCODE_SLASH: return '/';
+		case SDL_SCANCODE_0: return '0';
+		case SDL_SCANCODE_1: return '1';
+		case SDL_SCANCODE_2: return '2';
+		case SDL_SCANCODE_3: return '3';
+		case SDL_SCANCODE_4: return '4';
+		case SDL_SCANCODE_5: return '5';
+		case SDL_SCANCODE_6: return '6';
+		case SDL_SCANCODE_7: return '7';
+		case SDL_SCANCODE_8: return '8';
+		case SDL_SCANCODE_9: return '9';
+		case SDL_SCANCODE_A: return 'a';
+		case SDL_SCANCODE_B: return 'b';
+		case SDL_SCANCODE_C: return 'c';
+		case SDL_SCANCODE_D: return 'd';
+		case SDL_SCANCODE_E: return 'e';
+		case SDL_SCANCODE_F: return 'f';
+		case SDL_SCANCODE_G: return 'g';
+		case SDL_SCANCODE_H: return 'h';
+		case SDL_SCANCODE_I: return 'i';
+		case SDL_SCANCODE_J: return 'j';
+		case SDL_SCANCODE_K: return 'k';
+		case SDL_SCANCODE_L: return 'l';
+		case SDL_SCANCODE_M: return 'm';
+		case SDL_SCANCODE_N: return 'n';
+		case SDL_SCANCODE_O: return 'o';
+		case SDL_SCANCODE_P: return 'p';
+		case SDL_SCANCODE_Q: return 'q';
+		case SDL_SCANCODE_R: return 'r';
+		case SDL_SCANCODE_S: return 's';
+		case SDL_SCANCODE_T: return 't';
+		case SDL_SCANCODE_U: return 'u';
+		case SDL_SCANCODE_V: return 'v';
+		case SDL_SCANCODE_W: return 'w';
+		case SDL_SCANCODE_X: return 'x';
+		case SDL_SCANCODE_Y: return 'y';
+		case SDL_SCANCODE_Z: return 'z';
 
 		default:
 			break;
@@ -256,7 +232,6 @@ void IB_StartTic (void)
 					/* I_Info("m"); */
 				}
 				break;
-			#if SDL_MAJOR_VERSION >= 2
 			case SDL_WINDOWEVENT:
 				switch (sdl_event.window.event)
 				{
@@ -268,16 +243,7 @@ void IB_StartTic (void)
 						break;
 				}
 				break;
-			#else
-			case SDL_VIDEORESIZE:
-				surface = SDL_SetVideoMode(sdl_event.resize.w, sdl_event.resize.h, 32, SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE);
-				output_size_changed_callback(sdl_event.resize.w, sdl_event.resize.h);
 
-				if (surface == NULL)
-					I_Error("Could not create SDL window surface");
-
-				break;
-			#endif
 		}
 	}
 }
@@ -296,12 +262,7 @@ void IB_GetFramebuffer(unsigned char **pixels, size_t *pitch)
 void IB_FinishUpdate (void)
 {
 	SDL_UnlockSurface(surface);
-
-#if SDL_MAJOR_VERSION >= 2
 	SDL_UpdateWindowSurface(window);
-#else
-	SDL_Flip(surface);
-#endif
 }
 
 
@@ -319,30 +280,17 @@ void IB_GetColor(unsigned char *bytes, unsigned char red, unsigned char green, u
 void IB_InitGraphics(const char *title, size_t screen_width, size_t screen_height, size_t *bytes_per_pixel, void (*output_size_changed_callback_p)(size_t width, size_t height))
 {
 	output_size_changed_callback = output_size_changed_callback_p;
-#if SDL_MAJOR_VERSION >= 2
+
 	/* Enable high-DPI support on Windows because SDL2 is bad at being a platform abstraction library. */
 	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
-
 	SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-#else
-	SDL_InitSubSystem(SDL_INIT_VIDEO);
-#endif
 
-#if SDL_MAJOR_VERSION >= 2
 	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 	if (window == NULL)
 		I_Error("Could not create SDL window");
 
 	surface = SDL_GetWindowSurface(window);
-#else
-	surface = SDL_SetVideoMode(screen_width, screen_height, 32, SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE);
-
-	if (surface == NULL)
-		I_Error("Could not create SDL window surface");
-
-	SDL_WM_SetCaption(title, title);
-#endif
 
 	*bytes_per_pixel = surface->format->BytesPerPixel;
 
@@ -352,37 +300,21 @@ void IB_InitGraphics(const char *title, size_t screen_width, size_t screen_heigh
 
 void IB_ShutdownGraphics(void)
 {
-#if SDL_MAJOR_VERSION >= 2
 	SDL_FreeSurface(surface);
 	SDL_DestroyWindow(window);
-#endif
-
-#if SDL_MAJOR_VERSION >= 2
 	SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-#else
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-#endif
 }
 
 
 void IB_GrabMouse(d_bool grab)
 {
-#if SDL_MAJOR_VERSION >= 2
 	SDL_SetRelativeMouseMode(grab ? SDL_TRUE : SDL_FALSE);
-#else
-	SDL_WM_GrabInput(grab ? SDL_GRAB_ON : SDL_GRAB_OFF);
-	SDL_ShowCursor(!grab);
-#endif
 }
 
 void IB_ToggleFullscreen(void)
 {
-#if SDL_MAJOR_VERSION >= 2
 	static d_bool fullscreen;
 
 	fullscreen = !fullscreen;
 	SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-#else
-	SDL_WM_ToggleFullScreen(surface);
-#endif
 }

@@ -10,6 +10,7 @@ it drastically.)
 ## Changes
 
 - Add macOS support.
+- Use SDL2 only, removing vestigial SDL1 and X11 support when SDL2 already covers it.
 - Add `-skipmodwarning` command-line flag to skip the modified game warning prompt.
 - Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
 - Add `mouse_menu_pointing` option, allowing you to mouse over menu items to select them.
