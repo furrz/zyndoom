@@ -3,9 +3,13 @@
 This is a fork of [clownacy/clowndoom](https://github.com/Clownacy/clowndoom/) where
 I mess around with the DOOM codebase.
 
+This is by no means meant to be a 'better' DOOM port than a modernized version like gzdoom,
+nor is it meant to be 'faithful' to the original codebase (though I do not intend to change
+it drastically.)
+
 ## Changes
 
-- Clean up compilation on macOS.
+- Add macOS support.
 - Add `-skipmodwarning` command-line flag to skip the modified game warning prompt.
 - Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
 - Add `mouse_menu_pointing` option, allowing you to mouse over menu items to select them.
