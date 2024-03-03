@@ -49,20 +49,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Cache Submodules
-      id: cache-submodule
-      uses: actions/cache@v4
-      with:
-        path: |
-          external/SDL
-          external/wildmidi
-        key: submodules
-        enableCrossOsArchive: true
-
-    - name: Update Submodules
-      if: steps.cache-submodule.outputs.cache-hit != 'true'
-      uses: actions/checkout@v4
       with:
         submodules: recursive
 
