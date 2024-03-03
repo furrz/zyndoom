@@ -188,6 +188,8 @@ find_package(SDL2)
 
 if(NOT SDL2_FOUND)
 	add_subdirectory("external/SDL" EXCLUDE_FROM_ALL SYSTEM)
+	set(SDL_STATIC ON CACHE INTERNAL "")
+
 	if(SDL_STATIC)
 		target_link_libraries(zyndoom PRIVATE SDL2::SDL2main SDL2::SDL2-static)
 	else()
