@@ -613,7 +613,7 @@ void IdentifyConfigPath (void)
 		if (!M_DirExists(tmp_path)) continue;
 
 		for (const char* const* p_filename = &filename_candidates[0]; *p_filename != NULL; p_filename++) {
-			snprintf(path_end, sizeof(tmp_path) - (path_end - tmp_path), "%s", p_filename);
+			snprintf(path_end, sizeof(tmp_path) - (path_end - tmp_path), "%s", *p_filename);
 			if (M_FileExists(tmp_path)) {
 				strncpy(basedefault, tmp_path, sizeof(basedefault));
 				I_Info("Choosing Configuration Path: %s\n", tmp_path);
@@ -632,7 +632,6 @@ void IdentifyConfigPath (void)
 /* should be executed (notably loading PWAD's). */
 void IdentifyVersion (void)
 {
-	const char *configdir;
 	const char *doomwaddir;
 
 	/* always able to get wad dir from the environment */
