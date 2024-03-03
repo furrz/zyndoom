@@ -604,15 +604,17 @@ void IdentifyConfigPath (void)
 
 	char tmp_path[1024] = { 0 };
 
-	for (const struct path_candidate* pc = &path_candidates[0]; pc->directory_part_b != NULL; pc++) {
+	const struct path_candidate* pc;
+	for (pc = &path_candidates[0]; pc->directory_part_b != NULL; pc++) {
 		if (pc->directory_part_a == NULL) continue;
 
 		snprintf(tmp_path, sizeof(tmp_path), "%s%s", pc->directory_part_a, pc->directory_part_b);
-		const char* path_end = tmp_path + strlen(tmp_path);
+		char* const path_end = tmp_path + strlen(tmp_path);
 
 		if (!M_DirExists(tmp_path)) continue;
 
-		for (const char* const* p_filename = &filename_candidates[0]; *p_filename != NULL; p_filename++) {
+		const char* const* p_filename;
+		for (p_filename = &filename_candidates[0]; *p_filename != NULL; p_filename++) {
 			snprintf(path_end, sizeof(tmp_path) - (path_end - tmp_path), "%s", *p_filename);
 			if (M_FileExists(tmp_path)) {
 				strncpy(basedefault, tmp_path, sizeof(basedefault));

@@ -151,6 +151,10 @@ if(FRENCH)
 	target_compile_definitions(zyndoom PRIVATE FRENCH)
 endif()
 
+if(NOT MSVC)
+	target_link_libraries(zyndoom PRIVATE m)
+endif()
+
 # Handling linking/building WildMIDI
 if(WILDMIDI)
 	target_compile_definitions(zyndoom PRIVATE WILDMIDI)
