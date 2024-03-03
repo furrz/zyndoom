@@ -14,6 +14,14 @@ it drastically.)
 - Add `mouse_ungrab_on_pause` option to ungrab the mouse when you pause the game.
 - Add `mouse_menu_pointing` option, allowing you to mouse over menu items to select them.
   Will only work when `mouse_ungrab_on_pause` is also enabled.
+- If you have multiple DOOM IWADs in the wad dir, override which one to play using `-game` (with no `.WAD` on the end):
+  - `doom2f`: DOOM II Commercial French
+  - `doom2`: DOOM II Commercial
+  - `plutonia`: The Plutonia Experiment
+  - `tnt`: TNT: Evilution
+  - `doomu`: DOOM I Retail
+  - `doom`: DOOM I Registered
+  - `doom1`: DOOM I Shareware
 - New "smart" system for identifying the DOOM configuration path:
   - Checks the following directories, in order:
     - `./`
@@ -29,14 +37,7 @@ it drastically.)
     - `default.cfg`
   - If none exist, defaults to `./zyndoom.cfg`.
   - This system is overridden by the `-config` cmdline option.
-- If you have multiple DOOM IWADs in the wad dir, override which one to play using `-game` (with no `.WAD` on the end):
-  - `doom2f`: DOOM II Commercial French
-  - `doom2`: DOOM II Commercial
-  - `plutonia`: The Plutonia Experiment
-  - `tnt`: TNT: Evilution
-  - `doomu`: DOOM I Retail
-  - `doom`: DOOM I Registered
-  - `doom1`: DOOM I Shareware
+
 
 ## Recommendations
 
