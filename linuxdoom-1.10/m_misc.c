@@ -25,6 +25,15 @@
 
 #include <ctype.h>
 
+#include <sys/stat.h>
+
+
+#ifdef _WIN32
+#include <windows.h>
+#define sys_stat _stat
+#else
+#define sys_stat stat
+#endif
 
 #include "doomdef.h"
 
@@ -560,6 +569,15 @@ char* M_strndup(const char* const src, const size_t size)
 char* M_strdup(const char* const src)
 {
 	return M_strndup(src, strlen(src));
+}
+
+d_bool M_DirExists(const char* const dirname)
+{
+	struct stat fi;
+	if (sys_stat(dirname, &fi) == 0) {
+		return S_ISDIR(fi.st_mode);
+	}
+	return d_false;
 }
 
 d_bool M_FileExists(const char* const filename)

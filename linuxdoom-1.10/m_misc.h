@@ -58,6 +58,7 @@ char* M_strupr(char *string);
 char* M_strndup(const char *src, const size_t size);
 char* M_strdup(const char *src);
 
+d_bool M_DirExists(const char* const dirname);
 d_bool M_FileExists(const char* const filename);
 
 int M_BytesToShort(const unsigned char * const data);
