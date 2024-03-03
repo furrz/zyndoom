@@ -60,8 +60,7 @@ jobs:
       id: cache-submodule
       uses: actions/cache@v3
       with:
-        path: |
-          external/*
+        path: external/
         key: submodules
         enableCrossOsArchive: true
 
