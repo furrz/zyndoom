@@ -632,6 +632,23 @@ void IdentifyConfigPath (void)
 /* should be executed (notably loading PWAD's). */
 void IdentifyVersion (void)
 {
+	static const struct
+	{
+		char filename[8 + 1];
+		GameMode_t gamemode;
+		GameMission_t gamemission;
+		Language_t language;
+		const char* description;
+	} wads[] = {
+		{"doom2f",   commercial, doom2,     french,  "DOOM II Commercial French" },
+		{"doom2",    commercial, doom2,     english, "DOOM II Commercial"},
+		{"plutonia", commercial, pack_plut, english, "The Plutonia Experiment"},
+		{"tnt",      commercial, pack_tnt,  english, "TNT: Evilution"},
+		{"doomu",    retail,     doom,      english, "DOOM I Retail"},
+		{"doom",     registered, doom,      english, "DOOM I Registered"},
+		{"doom1",    shareware,  doom,      english, "DOOM I Shareware"},
+	};
+
 	const char *doomwaddir;
 
 	/* always able to get wad dir from the environment */
@@ -682,24 +699,44 @@ void IdentifyVersion (void)
 		D_AddFile (DEVMAPS"cdata/pnames.lmp");
 		strcpy (basedefault,DEVDATA"default.cfg");
 	}
+	else if (M_CheckParm ("-game")) {
+		const int game_parm_index = M_CheckParm("-game");
+		if (game_parm_index + 1 >= myargc) {
+			I_Error("No value supplied for -game parameter.");
+			return;
+		}
+
+		int i;
+		const char* const game_name = myargv[game_parm_index + 1];
+
+		/* override IWAD to load. */
+		for (i = 0; i < D_COUNT_OF(wads); i++) {
+			if (!strcmp(wads[i].filename, game_name)) {
+				const size_t wad_directory_length = strlen(doomwaddir);
+				char* const path = malloc(wad_directory_length + 1 + sizeof(wads[i].filename) - 1 + 4 + 1);
+				sprintf(path, "%s/%.*s.wad", doomwaddir, (int)sizeof(wads[i].filename) - 1, wads[i].filename);
+
+				if (!M_FileExists(path)) {
+					I_Error("Cannot find the required WAD for the game %s: %s\n", wads[i].filename, path);
+					free(path);
+				}
+
+				gamemode = wads[i].gamemode;
+				gamemission = wads[i].gamemission;
+				language = wads[i].language;
+				D_AddFile(path);
+
+				return;
+			}
+		}
+
+		I_Error("Unrecognized -game: %s\nAllowed games are:\n", game_name);
+		for (i = 0; i < D_COUNT_OF(wads); i++) {
+			I_Error("- %s\t%s\n", wads[i].filename, wads[i].description);
+		}
+	}
 	else
 	{
-		static const struct
-		{
-			char filename[8 + 1];
-			GameMode_t gamemode;
-			GameMission_t gamemission;
-			Language_t language;
-		} wads[] = {
-			{"doom2f",   commercial, doom2,     french },
-			{"doom2",    commercial, doom2,     english},
-			{"plutonia", commercial, pack_plut, english},
-			{"tnt",      commercial, pack_tnt,  english},
-			{"doomu",    retail,     doom,      english},
-			{"doom",     registered, doom,      english},
-			{"doom1",    shareware,  doom,      english},
-		};
-
 		const size_t wad_directory_length = strlen(doomwaddir);
 		char* const path = (char*)malloc(wad_directory_length + 1 + sizeof(wads[0].filename) - 1 + 4 + 1);
 

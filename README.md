@@ -25,7 +25,15 @@ I mess around with the DOOM codebase.
     - `default.cfg`
   - If none exist, defaults to `./zyndoom.cfg`.
   - This system is overridden by the `-config` cmdline option.
-  
+- If you have multiple DOOM IWADs in the wad dir, override which one to play using `-game` (with no `.WAD` on the end):
+  - `doom2f`: DOOM II Commercial French
+  - `doom2`: DOOM II Commercial
+  - `plutonia`: The Plutonia Experiment
+  - `tnt`: TNT: Evilution
+  - `doomu`: DOOM I Retail
+  - `doom`: DOOM I Registered
+  - `doom1`: DOOM I Shareware
+
 ## Recommendations
 
 - To get music working, unzip [this archive of GUS patches](https://www.doomworld.com/idgames/music/dgguspat) to a
