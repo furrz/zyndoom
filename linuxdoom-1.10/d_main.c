@@ -659,7 +659,7 @@ void IdentifyVersion (void)
 
 	/* override wad dir on command line */
 	const int p = M_CheckParm("-waddir");
-	if (p) doomwaddir = myargv[p];
+	if (p && p + 1 < myargc) doomwaddir = myargv[p + 1];
 
 	IdentifyConfigPath();
 
